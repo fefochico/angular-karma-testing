@@ -2,8 +2,11 @@ import { ComponentFixture, TestBed } from "@angular/core/testing";
 import { CartComponent } from "./cart.component"
 import { BookService } from "src/app/services/book.service";
 import {HttpClientTestingModule} from "@angular/common/http/testing"
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from "@angular/core";
+import { CUSTOM_ELEMENTS_SCHEMA, DebugElement, NO_ERRORS_SCHEMA } from "@angular/core";
 import { Book } from "../../models/book.model";
+import { of } from "rxjs";
+import { MatDialog } from "@angular/material/dialog";
+import { By } from "@angular/platform-browser";
 
 const listBook: Book[] = [
     {
@@ -29,6 +32,13 @@ const listBook: Book[] = [
     }
 ];
 
+const MatDialogMock = {
+    open(){
+        return {
+            afterClosed: () => {return of(true)}
+        };
+    }
+};
 describe('Cart component', () => {
     let component: CartComponent;
     let fixture: ComponentFixture<CartComponent>;
@@ -42,7 +52,10 @@ describe('Cart component', () => {
                 CartComponent
             ],
             providers:[
-                BookService
+                BookService,
+                {
+                    provide: MatDialog, useValue: MatDialogMock
+                }
             ],
             schemas:[
                 CUSTOM_ELEMENTS_SCHEMA,
@@ -150,4 +163,23 @@ describe('Cart component', () => {
         expect(component.listCartBook.length).toBe(0);
         expect(spy1).toHaveBeenCalled();
     })
+
+    //Ejemplos de test de integracion
+    it('The title "The cart is empty" is not displayed when there is a list', () => {
+        component.listCartBook = listBook;
+        fixture.detectChanges();
+        const debugElement: DebugElement = fixture.debugElement.query(By.css('#titleCartEmpty'));
+        expect(debugElement).toBeFalsy();
+    });
+
+    it('The title "The cart is empty" is displayed correctly when the list is empty', () => {
+        component.listCartBook = [];
+        fixture.detectChanges();
+        const debugElement: DebugElement = fixture.debugElement.query(By.css('#titleCartEmpty'));
+        expect(debugElement).toBeTruthy();
+        if(debugElement){
+            const element: HTMLElement = debugElement.nativeElement;
+            expect(element.innerHTML).toContain('The cart is empty');
+        }
+    });
 })
