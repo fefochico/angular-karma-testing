@@ -2,6 +2,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { NgModule } from '@angular/core';
 import { HomeComponent } from './home/home.component';
 import { CartComponent } from './cart/cart.component';
+import { FormComponent } from './form/form.component';
 
 
 export const routes: Routes = [
@@ -12,6 +13,10 @@ export const routes: Routes = [
   {
     path: 'cart',
     component: CartComponent
+  },
+  {
+    path: 'form',
+    component: FormComponent
   },
   {
     path: '',
@@ -26,7 +31,7 @@ export const routes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { useHash: true }),
+    RouterModule.forRoot(routes, { useHash: true}),
   ],
   exports: [
     RouterModule
