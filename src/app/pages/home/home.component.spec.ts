@@ -5,6 +5,7 @@ import { BookService } from "src/app/services/book.service";
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { Book } from "src/app/models/book.model";
 import { of } from "rxjs/internal/observable/of";
+import { DOCUMENT } from "@angular/common";
 
 
 //Depurar en chrome con karma abierto ir a inspector soruces context y ya buscar el test al que poner el breakpoint
@@ -58,6 +59,10 @@ describe('Home component', () => {
                 {
                     provide: BookService,
                     useValue: bookServiceMock
+                },
+                {
+                    provide: Document,
+                    useExisting: DOCUMENT
                 }
             ],
             schemas:[CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
@@ -95,5 +100,13 @@ describe('Home component', () => {
         component.getBooks();
         //expect(spy1).toHaveBeenCalled();
         expect(component.listBook.length).toBe(3);
+    });
+
+    it("test alert", () => {
+        const documentService = TestBed.inject(Document);
+        const windowAngular = documentService.defaultView;
+        const spy = spyOn(windowAngular!, 'alert').and.callFake(() => null);
+        component.ngOnInit();
+        expect(spy).toHaveBeenCalled();
     });
 })
